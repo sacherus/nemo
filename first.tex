@@ -1,0 +1,152 @@
+%        File: first.tex
+%     Created: wto mar 10 12:00  2015 C
+% Last Change: wto mar 10 12:00  2015 C
+%
+\documentclass[a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage[T1]{polski}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+%
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+%\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+%\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+%\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+%\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+%\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+%
+
+\newtheorem{zad}{Zadanie}
+\newtheorem{df}{Definicja}
+\newtheorem{tw}{Twierdzenie}
+\theoremstyle{definition}
+\newtheorem{exmp}{Przykład}[section]
+\begin{document}
+\title{Wykorzystanie głębokich sieci neuronowych w~automatycznym rozpoznawaniu mowy}
+\author{Piotr Kowenzowski}
+\date{\today}
+\maketitle
+\tableofcontents
+\newpage
+
+\chapter{Konspekt}
+\section{Cel pracy} Celem pracy jest przeprowadzanie eksperymentu wykorzystując cechy bottleneck i~porównanie wyników z~dotychczasowymi wynikami badaczy. 
+\section{Przedmiot badania} Korpus treningowy libreespech
+\section{Hipoteza} Cechy bottleneck poprawiają wyniki o~kilka procent w~porówaniu do dotyczasowych systemów opartych na HMM.
+\section{Literatura} TODO
+\section{Harmonogram}
+1) 13.04-19.04:
+	Pierszy rozdział. Przygotowanie korpusu treningowego. Przeczytanie książek publikacji o~ML/DL oraz publikacji MLP/ASR. \\
+2) 20.04-27.04: \\
+	Przeczytanie publikacji o~DNN/ASR. \\
+	Pierwsze programy w~PDNN. \\
+3) 27.04-03.05: \\
+	Stworzenie frameworku w~PDNN i~integracja z~Kaldi. \\
+	Pierwsze wyniki eksperymentu \\
+
+
+
+\listoftodos
+
+\chapter{Introduction}
+
+Automatic speech recognition (ASR) is a~hot topic where are used recent machine learning technics.
+
+\section{History}
+
+\chapter{Models}
+
+\section{Introduction to Signal Processing}
+
+Most often functions used in signal analysis are cosine and sine wave in form:
+\begin{equation}
+	y = A*sin(2\pi ft)
+	\label{Sinus form}
+\end{equation}
+
+Two basic features of wave are amplitude and frequency:
+the frequency is how man times waves wive repeats itself in 1s. Frequency is measred in cycles per second and called Hertz (Hz). Maximum value on the graph presenting sine wave is called amplitude (A).
+
+Opposite to frequency we use period T as a~measure of the time between next cycles.
+
+
+\begin{equation}
+	T = \frac{1}{f}
+	\label{Definition of period}
+\end{equation}
+
+\todo{To brzmi troche jak dla proletariatu}
+Speech is nothing more like the changes of the pressure of the air as compression and uncompression. Of course it is analog signal which has to be transformed into digital one. This procedure is called analog to digital conversion which consists of 2 steps: quanitzation and sampling. Sampling frequence is the measure how often we sample the signal in 1s. 
+
+
+So called 'telephone\dywiz bandwith' is sampled with 8,000 Hz sampling rate and is widely used in a~telecomunication industry. For the speech recognition purpose 16,000 Hz sampling rate is used.  
+
+
+\missingfigure{Example sentence in audacity}
+
+
+
+
+\section{MFCC}
+
+\section{GMM - Gaussian Mixture ModelT}
+
+One of the key concepts in ASR~is Gaussian distribution also known as normal distribution. A~Gaussion distribution is parametrized by a~mean $\mu $ and a~variance $\sigma ^ 2$. Density function can by expressed as:
+\begin{equation}
+	f(x|\mu,\sigma) = \frac {1}{\sqrt{2\pi\sigma^2}}\exp(-\frac{(x-\mu)^2}{2\sigma ^ 2})
+	\label{Gaussion Distribution}
+\end{equation}
+
+Density functions over a~continous space are called probability density function or pdf. In a~further chapters we will use pdf for probablity density funtion.
+
+fjdsklfjlsj
+
+\section{HMM - Hidden Markov Model}
+
+HMMs are used both in 'classical' GMM (Gaussian Mixture Models) and in DNN (Deep Neural Networks), so it's important to explain this at the beginning. HMM is a~statistical Markov model with hidden states. It's easier to explain simpler model which is Markov chain (HMM without hidden states)
+
+
+
+\chapter{Automatyczne rozpoznawanie mowy (ASR)}
+\section{Definicja problemu}
+\section{Ekstrakcja cech}
+\section{Metody wykorzystywane w~ASR}
+
+\chapter{Głębokie sieci neuronowe}
+
+\chapter{Wykorzystanie głębokich sieci neuronowych w ASR}
+
+\chapter{Eksperyment}
+\section{Korpus treningowy}
+\section{Biblioteka Kaldi}
+\section{Biblioteka Theano i~PDNN}
+\section{Wyniki eksperymentu}
+
+\chapter{Wnioski}
+
+
+
+
+
+\end{document}
+
+
+\begin{thebibliography}{9}``
+\bibitem{latexcompanion} 
+Michel Goossens, Frank Mittelbach, and Alexander Samarin. 
+\textit{The \LaTeX\ Companion}. 
+Addison-Wesley, Reading, Massachusetts, 1993.
+ 
+\bibitem{einstein} 
+Albert Einstein. 
+\textit{Zur Elektrodynamik bewegter K{\"o}rper}. (German) 
+[\textit{On the electrodynamics of moving bodies}]. 
+Annalen der Physik, 322(10):891–921, 1905.
+ 
+\bibitem{knuthwebsite} 
+Knuth: Computers and Typesetting,
+\\\texttt{http://www-cs-faculty.stanford.edu/\~{}uno/abcde.html}
+\end{thebibliography}
