@@ -1,16 +1,12 @@
-%        File: first.tex
-%     Created: wto mar 10 12:00  2015 C
-% Last Change: wto mar 10 12:00  2015 C
-%
 \documentclass[a4paper]{report}
 
 \usepackage[utf8]{inputenc}
-\usepackage[polish]{babel}
+\usepackage[polish,english]{babel}
 \usepackage[T1]{polski}
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amsmath}
-%
+
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
 %\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
 %\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
@@ -19,66 +15,211 @@
 %\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
 %
 
-\newtheorem{zad}{Zadanie}
-\newtheorem{df}{Definicja}
-\newtheorem{tw}{Twierdzenie}
+%\newtheorem{df}{Definition}
+
 \theoremstyle{definition}
-\newtheorem{exmp}{Przykład}[section]
+\newtheorem{definition}{Definition}[chapter]
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+%defining abs operator
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+
+%\newtheorem{df}{Definicja}
+%\newtheorem{tw}{Twierdzenie}
+%\theoremstyle{definition}
+%\newtheorem{exmp}{Przykład}[section]
+
 \begin{document}
-\title{Wykorzystanie głębokich sieci neuronowych w~automatycznym rozpoznawaniu mowy}
+\title{}
 \author{Piotr Kowenzowski}
 \date{\today}
 \maketitle
 \tableofcontents
 \newpage
 
-\chapter{Konspekt}
-\section{Cel pracy} Celem pracy jest przeprowadzanie eksperymentu wykorzystując cechy bottleneck i~porównanie wyników z~dotychczasowymi wynikami badaczy. 
-\section{Przedmiot badania} Korpus treningowy libreespech
-\section{Hipoteza} Cechy bottleneck poprawiają wyniki o~kilka procent w~porówaniu do dotyczasowych systemów opartych na HMM.
-\section{Literatura} TODO
-\section{Harmonogram}
-1) 13.04-19.04:
-	Pierszy rozdział. Przygotowanie korpusu treningowego. Przeczytanie książek publikacji o~ML/DL oraz publikacji MLP/ASR. \\
-2) 20.04-27.04: \\
-	Przeczytanie publikacji o~DNN/ASR. \\
-	Pierwsze programy w~PDNN. \\
-3) 27.04-03.05: \\
-	Stworzenie frameworku w~PDNN i~integracja z~Kaldi. \\
-	Pierwsze wyniki eksperymentu \\
-
-
-
 \listoftodos
 
 \chapter{Introduction}
 
-Automatic speech recognition (ASR) is a~hot topic where are used recent machine learning technics.
 
-\section{History}
+In the last 5 years ``Machine Learning'', ``Big Data'', ``Neural Nets'', etc. become buzz words and hot topics \todo{really hot topics and buzz words?!} in science and industry. Business often doesn't understand those words. Nevertheless, a~great amount of money is put in the area of ``Big Data''. Still development of the new algorithms and techniques is highly is desirable, because some problems (NP problems) are too complex for programmers to calculate all possible combinations (like k\dywiz means clustering published by Lloyd in 1957) or simple direct method does not exist (part\dywiz of\dywiz speech tagging - \todo{Find proper work}).  
 
-\chapter{Models}
+Machine Learning (ML) scientific term was coined by Samuel in 1959 as ``Programming computers to learn from experience should eventually eliminate the need for much of this detailed programming effort''. Deep Learning (DL) one of the most prominent and recent ML techniques has brought the improvement of results and it is widely used by the industry. In this work we will try show that DL~ overwhelmed other ML algorithms in some real life application.
 
-\section{Introduction to Signal Processing}
+Variety of everyday life problems can be helped by Machine Learning methods. We will adopt DL~ to Automatic speech recognition (ASR) in this work and show its advantage over most common technique which is gaussian mixture models (GMM).
 
-Most often functions used in signal analysis are cosine and sine wave in form:
-\begin{equation}
-	y = A*sin(2\pi ft)
-	\label{Sinus form}
+\todo{Structure of thesis}
+This work contains:
+
+\chapter{Automatic Speech Recognition problem}
+Automatic speech recognition is extremely complex task. It demands enormous processing power, amount of data and good algorithms which can mimic a~behaviour of human ear and brain. The process can be understood as extracting text information from an audio data, often represented as PCM (Pulse Code Modulation) ~file. Multiple problems arise when we try to implement basic system: microphone noise, speech defects, variety of speaker, accents, infinite size of vocabulary and many others. Many fields of computer science were adopted in the problem:~gaussian mixture models, hidden Markov models, dynamic programming, decision trees, Fourier transform. 
+
+\begin{definition}
+	Automatic speech recognition - given audio input stream $I$ represented as observation $O$ find the sentence $W\in L$ which was said by the speaker. 
+\end{definition}
+
+
+Unfortunately this definition seems to be missing many other definitions and is ambiguous: there is small phonetic difference, between:~``making ends meet'', ``making hens meat'' and even human expert cannot say difference between those 2 sentences. Due to this equivocality, some measure is needed which will allow us to evaluate which sentence is proper. The most natural and practical measure is probability $P()$.
+
+
+Let us introduce some missed definitions:
+
+\begin{definition}
+	An observation $O = o_1,o_2,\dots,o_t$ is a~sequence of intervals of input speech represented as a~matrix in time 1 \dots t.
+\end{definition}
+
+\begin{definition}
+	A formal language $L$ over an alphabet $\Sigma$ is subset of $\Sigma^*$.
+\end{definition}
+
+In this work we will focus the most popular approach which are n\dywiz grams models and for for alphabet we will use set of letters in English language. Theoretical fundamentals of formal languages are out of scope of this work.
+
+\begin{definition}
+	A~sentence $W$ is an element of a~language $L$.	
+\end{definition}
+
+\begin{definition}
+	An observation $O = o_1,o_2,\dots,o_t$ is a~sequence of intervals of input speech represented as a~matrix in time 1 \dots  t.
+\end{definition}
+
+Those basic definitions allow us to define task of automatic speech recognition again: 
+
+\begin{definition}
+	Automatic speech recognition - given audio input stream $I$ represented as an acoustic observation O, find the sentence $W^* \in L$ which maximize the probability of O
+\begin{equation} 
+W^*=\underset{W \in L}{\operatorname{argmax}} P(W|O)
 \end{equation}
 
-Two basic features of wave are amplitude and frequency:
-the frequency is how man times waves wive repeats itself in 1s. Frequency is measred in cycles per second and called Hertz (Hz). Maximum value on the graph presenting sine wave is called amplitude (A).
+\end{definition}
 
-Opposite to frequency we use period T as a~measure of the time between next cycles.
+\chapter{Data processing}
+\section{Digital Signal Processing}
+
+Signal $x_a(t), -\inf < t < \inf$ is a~function of independent variable which is the time. In order to digitize signal and be able to store it into memory we must digitize signal and create sequence or a~function. The process is done using Analog Digital converter - device which converts analog to digital signal using a~sampler and a~quantizer.
+
+The sampler ``takes samples'' of the analog signal $x_a(t)$ every $T_s$ seconds. The sampling frequency $F_s$, the sampling period, independent variable - time($t$) and independent variable - sample (n) are related by formula:
+
+\begin{equation}
+	t = nT_s = \frac{n}{F_s}
+\end{equation}
+
+\begin{equation}
+	x_a(nT) \equiv x(n)
+\end{equation}
+
+
+Most often functions used in signal analysis are a~cosine and sine waves in the form:
+\begin{equation}
+	x_a(t) = Acos(\Omega t +~\theta)
+\end{equation}
+
+\begin{equation}
+	\Omega \equiv 2\pi F
+\end{equation}
+
+Where A~is an amplitude signal strength, $\Omega$ - frequency (rad/s), F - Hz, $\theta$ - phase (rad) shift.  
+Similary we can define those variables in digitial domain:
+
+\begin{equation}
+	x(n) = Acos(\omega t +~\theta)
+\end{equation}
+
+\begin{equation}
+	\omega \equiv 2\pi f
+\end{equation}
+
+
+Where A~is an amplitude signal strength, $\omega$ - frequency (radians/sample), f - (cycles/sample), $\theta$ - phase (rad) shift.  
+
+N~is a~period of the~signal when
+
+
+\begin{align}
+& x(n+N) = x(n), \forall n \in \mathbb{Z} \implies \\
+& cos(2\pi f (n +~N) +~\theta) = cos(2\pi f n +~\theta) \implies \\
+& f = \frac{k}{N}, k \in \mathbb{Z} \implies f \in \mathbb{Q}
+\end{align}
+
+This implies that frequency in digital time domain is rational number.
+
+
+All equations:
+
+\begin{equation}
+x_k(n)=Acos(2\pi f_0 n +~\theta)
+\label{cosine_digital}
+\end{equation}
+
+where f equals
 
 
 \begin{equation}
-	T = \frac{1}{f}
-	\label{Definition of period}
+2 \pi f = 2 \pi f_o +~2\pi k \implies f = f_0 + k
 \end{equation}
 
-\todo{To brzmi troche jak dla proletariatu}
+
+are those same for every $f = f_0 + k, k \in \mathbb{N}$. This allow to distinguish range for fundumaental frequency $f_0$
+\begin{equation}
+|f_0| < \frac{1}{2}
+\label{fundamental_one_half}
+\end{equation}
+Frequencies $|f| > \frac{1}{2}$ are alias frequencies which ``mirror'' which a~fundamental frequency from range $f_0$.
+
+
+Wk1hen we sampling an analog cosine signal $x_a$ with the sampling frequency $F_s$, we get:
+hk
+\begin{equation}
+x_a(nT)=x_a(\frac{n}{F_s}) \equiv x(n) = Acos(\frac{2\pi n F}{F_s} +~\theta) 
+\label{cosine_sampling}
+\end{equation}
+
+Comparison of equations \ref{cosine_sampling} and \ref{cosine_digital} yields 
+
+\begin{equation}
+f_0 = \frac{F}{Fs}
+\label{fundamental_sampling}
+\end{equation}
+
+Substituting $f_0$ in \ref{fundamental_one_half} by \ref{fundamental_sampling} results in one of the most important conclusions in digital signal processing which is maximum frequency one can digitalize:
+
+\begin{equation}
+	\abs*{\frac{F}{F_s}} < \frac{1}{2} \implies \abs{F} < \frac{F_s}{2}
+\end{equation}
+ 
+
+Maximum frequency which could be converted to digital domain is half of the sampling frequency - is called ``folding frequency'' $F_{fold}$. On the other hand having maximum frequency $F_{max}$ in our signal $x_a$ one is able to define ``Nyquist rate'', which is equal to $2 F_{max}$. Human ear is working in range $20 Hz <~F_h <~20kHz$, which yields ``Nyquist rate'' - the samplilng frequency - 40kHz (often used frequency 44.1kHz due to imperfection of low\dywiz band filters). Speech lies in the range $< 16kHz$. Other frequencies $> 16kHz$ should be filtered\dywiz out by analog low\dywiz band filters. This subject is out of the scope of this work. 
+
+An input signal is analog data which contains continous range of values, therefore it should be quantize to fit into memory range. Operation done be quantizer ($Q[x(n)] \equiv x_q(n)$) introduce quantization error:
+
+\begin{equation}
+e_q(n) = x_q(n) - x(n)
+\end{equation}
+
+The problem can be solved by rounding or by truncation. In this work we will focus only on rounding. $e_q(n)$ is limited to:
+
+
+\begin{equation}
+	-\frac{\Delta}{2} < e_q(n) < \frac{\Delta}{2}
+\end{equation}
+
+where $\Delta$ means:
+
+\begin{equation}
+	\Delta = \frac{x_{max}-x_{min}}{L-1}
+\end{equation}
+
+where $x_{max}, x_{min}$ are the maximum and minimum values of the signal, L~is the number of quantization levels.
+
+
+\begin{align}
+	& x(n) = 1 \\
+	& x(n) = 1 
+\end{align}
+
+\todo{To brzmi troche jak dla proletariatu - wywalic}
 Speech is nothing more like the changes of the pressure of the air as compression and uncompression. Of course it is analog signal which has to be transformed into digital one. This procedure is called analog to digital conversion which consists of 2 steps: quanitzation and sampling. Sampling frequence is the measure how often we sample the signal in 1s. 
 
 
@@ -92,44 +233,25 @@ So called 'telephone\dywiz bandwith' is sampled with 8,000 Hz sampling rate and 
 
 \section{MFCC}
 
-\section{GMM - Gaussian Mixture ModelT}
 
-One of the key concepts in ASR~is Gaussian distribution also known as normal distribution. A~Gaussion distribution is parametrized by a~mean $\mu $ and a~variance $\sigma ^ 2$. Density function can by expressed as:
+\section{}
+
+\section{GMM - Gaussian mixture model}
+
+One of the key concepts in ASR~is Gaussian distribution also known as normal distribution. A~Gaussian distribution is parametrized by a~mean $\mu $ and a~variance $\sigma ^ 2$. Density function can by expressed as:
 \begin{equation}
 	f(x|\mu,\sigma) = \frac {1}{\sqrt{2\pi\sigma^2}}\exp(-\frac{(x-\mu)^2}{2\sigma ^ 2})
 	\label{Gaussion Distribution}
 \end{equation}
 
-Density functions over a~continous space are called probability density function or pdf. In a~further chapters we will use pdf for probablity density funtion.
-
-fjdsklfjlsj
+Density functions over a~continuous space are called probability density function or pdf. In a~further chapters we will use pdf for probability density function.
 
 \section{HMM - Hidden Markov Model}
 
 HMMs are used both in 'classical' GMM (Gaussian Mixture Models) and in DNN (Deep Neural Networks), so it's important to explain this at the beginning. HMM is a~statistical Markov model with hidden states. It's easier to explain simpler model which is Markov chain (HMM without hidden states)
 
 
-
-\chapter{Automatyczne rozpoznawanie mowy (ASR)}
-\section{Definicja problemu}
-\section{Ekstrakcja cech}
-\section{Metody wykorzystywane w~ASR}
-
-\chapter{Głębokie sieci neuronowe}
-
-\chapter{Wykorzystanie głębokich sieci neuronowych w ASR}
-
-\chapter{Eksperyment}
-\section{Korpus treningowy}
-\section{Biblioteka Kaldi}
-\section{Biblioteka Theano i~PDNN}
-\section{Wyniki eksperymentu}
-
-\chapter{Wnioski}
-
-
-
-
+\chapter{Previous approaches}
 
 \end{document}
 
