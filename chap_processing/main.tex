@@ -1,0 +1,121 @@
+\chapter{Digital Signal Processing}
+
+Signal $x_a(t), -\infty < t < \infty$ is a~function of independent variable which is the time. In order to digitize signal and be able to store it into memory we must digitize signal and create sequence or a~function. The process is done using Analog Digital converter - device which converts analog to digital signal using a~sampler and a~quantizer.
+
+The sampler ``takes samples'' of the analog signal $x_a(t)$ every $T_s$ seconds. The sampling frequency $F_s$, the sampling period, independent variable - time($t$) and independent variable - sample (n) are related by formula:
+
+\begin{equation}
+	t = nT_s = \frac{n}{F_s}
+\end{equation}
+
+\begin{equation}
+	x_a(nT) \equiv x(n)
+\end{equation}
+
+
+Most often functions used in signal analysis are a~cosine and sine waves in the form:
+\begin{equation}
+	x_a(t) = Acos(\Omega t +~\theta)
+\end{equation}
+
+\begin{equation}
+	\Omega \equiv 2\pi F
+\end{equation}
+
+Where A~is an amplitude signal strength, $\Omega$ - frequency (rad/s), F - Hz, $\theta$ - phase (rad) shift.  
+Similar we can define those variables in digital domain:
+
+\begin{equation}
+	x(n) = Acos(\omega t +~\theta)
+\end{equation}
+
+\begin{equation}
+	\omega \equiv 2\pi f
+\end{equation}
+
+
+Where A~is an amplitude signal strength, $\omega$ - frequency (radians/sample), f - (cycles/sample), $\theta$ - phase (rad) shift.  
+
+N~is a~period of the~signal when
+
+
+\begin{align}
+& x(n+N) = x(n), \forall n \in \mathbb{Z} \\
+& cos(2\pi f (n +~N) +~\theta) = cos(2\pi f n +~\theta) \\
+& f = \frac{k}{N}, k \in \mathbb{Z} \implies f \in \mathbb{Q}
+\end{align}
+
+This implies that frequency in digital time domain is a rational number.
+
+
+Equation:
+\begin{equation}
+	x_k(n)=Acos(2\pi f_0(n) +~\theta),
+\label{cosine_digital}
+\end{equation}
+is periodic, where period of $x_k$ equals
+
+
+\begin{equation}
+	2 \pi f = 2 \pi f_o +~2\pi k \implies f = f_0 + k, k \in \mathbb{N}
+\end{equation}
+This allow to distinguish range for fundamental frequency $f_0$
+\begin{equation}
+|f_0| < \frac{1}{2}
+\label{fundamental_one_half}
+\end{equation}
+Frequencies $|f| > \frac{1}{2}$ are called ``alias frequencies'' which ``mirror'' the~fundamental frequency from range $f_0$.
+
+
+When we sample an analog cosine signal $x_a$ with the sampling frequency $F_s$, we get:
+
+\begin{equation}
+x_a(nT)=x_a(\frac{n}{F_s}) \equiv x(n) = Acos(\frac{2\pi n F}{F_s} +~\theta) 
+\label{eq:cosine_sampling}
+\end{equation}
+
+Comparison of equations \eqref{eq:cosine_sampling} and \eqref{cosine_digital} yields 
+
+\begin{equation}
+f_0 = \frac{F}{Fs}
+\label{fundamental_sampling}
+\end{equation}
+
+Substituting $f_0$ in \eqref{fundamental_one_half} by \eqref{fundamental_sampling} results in one of the most important conclusions in digital signal processing which is maximum frequency one can digitize:
+
+\begin{equation}
+	\abs*{\frac{F}{F_s}} < \frac{1}{2} \implies \abs{F} < \frac{F_s}{2}
+\end{equation}
+ 
+
+Maximum frequency which could be converted to digital domain is half of the sampling frequency - is called ``folding frequency'' $F_{fold}$. On the other hand having maximum frequency $F_{max}$ in our signal $x_a$ one is able to define ``Nyquist rate'', which is equal to $2 F_{max}$. Human ear is working in range $20 Hz <~F_h <~20kHz$, which yields ``Nyquist rate'' - the sampling frequency - 40kHz (often used frequency 44.1kHz due to imperfection of low\dywiz band filters). Speech lies in the range $< 16kHz$. Other frequencies $> 16kHz$ should be filtered\dywiz out by analog low\dywiz band filters. This subject is out of the scope of this work. 
+
+An input signal is analog data which contains continuous range of values, therefore it should be quantize to fit into memory range. Quantization error should be introduced, because of quantizer ($Q[x(n)] \equiv x_q(n)$):
+
+\begin{equation}
+e_q(n) = x_q(n) - x(n)
+\end{equation}
+
+The problem can be solved by rounding or by truncation. In this work we will focus only on rounding. Error $e_q(n)$ is limited to:
+
+
+\begin{equation}
+	-\frac{\Delta}{2} < e_q(n) < \frac{\Delta}{2}
+\end{equation}
+where $\Delta$ means:
+
+\begin{equation}
+	\Delta = \frac{x_{max}-x_{min}}{L-1}
+\end{equation}
+where $x_{max}, x_{min}$ are the maximum and minimum values of the signal, L~is the number of quantization levels.
+
+
+\begin{align}
+	& x(n) = 1 \\
+	& x(n) = 1 
+\end{align}
+
+\todo{This like for proletariat}
+
+\missingfigure{Example sentence in audacity}
+

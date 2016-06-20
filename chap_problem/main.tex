@@ -1,0 +1,43 @@
+\chapter{Automatic Speech Recognition problem}
+Automatic speech recognition is an extremely complex task. It demands enormous processing power, amount of data and good algorithms which can become similar in a~behavior of human ear or brain. The process can be understood as extracting text information from an audio data, often represented as PCM (Pulse Code Modulation) ~file. Multiple problems arise when we try to implement basic system: microphone noise, speech defects, variety of speaker, accents, infinite size of vocabulary and many others. Many fields of computer science were adopted in the problem:~gaussian mixture models, hidden Markov models, dynamic programming, decision trees, Fourier transform. 
+
+\begin{definition}
+	Automatic speech recognition (ASR) - given audio input stream $I$ represented as observation $O$ find the sentence $W\in L$ which was said by the speaker. 
+\end{definition}
+
+
+Unfortunately this definition seems to be missing many other definitions and is ambiguous: there is small phonetic difference, between:~``making ends meet'', ``making hens meat'' and even human expert cannot tell difference between those 2 sentences. Due to this equivocality, some measure is needed which will allow us to evaluate which sentence is proper. The most natural and practical measure is probability $P()$.
+
+
+Let us introduce some missing definitions:
+
+\begin{definition}
+	An observation $O = o_1,o_2,\dots,o_t$ is a~sequence of intervals of input speech represented as a~matrix in time 1 \dots t.
+\end{definition}
+
+\begin{definition}
+	A formal language $L$ over an alphabet $\Sigma$ is subset of $\Sigma^*$.
+\end{definition}
+
+In this work we will focus on the most popular approach which are n\dywiz grams models and for for alphabet we will use set of letters in English language. Theoretical fundamentals of formal languages are out of scope of this work.
+
+\begin{definition}
+	A~sentence $W$ is an element of a~language $L$.	
+\end{definition}
+
+\begin{definition}
+	An observation $O = o_1,o_2,\dots,o_t$ is a~sequence of intervals of input speech represented as a~matrix in time 1 \dots  t.
+\end{definition}
+
+Those basic definitions allow us to define task of automatic speech recognition again: 
+
+\begin{definition}
+	Automatic speech recognition (ASR) - given audio input stream $I$ represented as an acoustic observation O, find the sentence $W^* \in L$ which maximize the probability of O
+\begin{equation} 
+W^*=\underset{W \in L}{\operatorname{argmax}} P(W|O)
+\end{equation}
+
+\end{definition}
+
+
+

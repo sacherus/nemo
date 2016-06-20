@@ -1,0 +1,407 @@
+\chapter{Models}
+
+\todo{Change order of HMM and GMM}
+
+\section{MFCC - Mel frequency cepstrum}
+\todo{I: add section about MFCC}
+
+
+
+
+
+\section{HMM - Hidden Markov model}
+
+HMMs are used both in 'classical' GMM (Gaussian mixture models) and in hybrid ANN approach \parencite{jurafsky}. HMM is a sequence classifier which job is to assign sequence of labels to sequence of data and serves as a basic tool in speech recognition.
+
+\begin{definition} A Markov chain is an extension of FSA (finite state automaton) in which for every arch there is assigned probability (graphical probabilistic model):
+	\begin{align}
+		& q \in Q \text{ state in Markov chain - visible variable} \\
+		& q_0,q_F \in Q \text{ starting and final state. Those state are called non-emitting.} \\
+		& P(q_1 \ldots q_{i})=a_i; \sum\limits_{i}a_i=1\\
+		& \pi; \sum\limits_{i} \pi_i=1 \text{ Initial probability distribution} \\
+		& QA \subset Q \text{ Set of accepting states } 
+	\end{align}
+\end{definition}
+
+In first-order chain, there is Markov assumption:
+\begin{definition} Markov assumption - probability of the current state depends only on the previous one.
+	\begin{equation}
+		P(q_i|q_1\ldots q_{i-1})=P(q_i|q_{i_1})
+	\end{equation}
+\end{definition}
+However, often in nature visible variable depends on the hidden one, which we would like to estimate with the hidden Markov model:
+
+\begin{definition} Hidden Markov model $\lambda=(A,B,\pi)$ - graphical probabilistic model. Similar to a Markov chain, but with additional hidden states:
+	\begin{align}
+		&A \text{ - transition probability matrix } \\
+		&O \text{ - vector of observations} \\
+		&B \text{ - vector of observation likelihoods}
+	\end{align}
+\end{definition}
+Together with Markov assumption in HMM there is Output independence assumption: 
+
+\begin{definition} Output independence assumption: current output is dependent only on of the current state - not on the previous states or observations: 
+	\begin{align}
+		& P(o_i|q_1 \ldots q_{i-1},o_1 \ldots o_i)=P(o_i|q_i)
+	\end{align}
+\end{definition} 
+HMM with full connectivity is called ``ergodic HMM''. However, in speech recognition graphs ``from the left to the right'' are used most often - it means that we cannot visit a state that we already visited during graph traversal and probability of backward arches is to $P(q_i|q_{i-1})=0$. \textcite{rabiner_tutorial_1989} in his famous work covered in his tutorial definitions of three problems that HMM should be able to solve:
+
+
+\begin{definition} Computing Likelihood: \\
+	\label{def:comp_likelihood}
+	given HMM $\lambda = (A,B,\pi)$ and observations $O$, find $P(O|\lambda)$.	
+\end{definition}
+
+\begin{definition} Decoding: \\
+	\label{def:hmm_decoding}
+	given HMM $\lambda = (A,B,\pi)$ and observations $O$, determine $Q^*=\argmax\limits_Q P(O|Q,\lambda)$.	
+\end{definition}
+
+\begin{definition} Learning: \\
+	given states Q and observations $O$, find model $\lambda^*$ which $\lambda^*=\argmax\limits_\lambda P(O|Q,\lambda)$.	
+\end{definition}
+
+Problem \ref{def:comp_likelihood} can be solve by using conditional probability (we won't write $\lambda$ for this particular problem):
+
+
+\begin{equation}
+	P(O)=\sum\limits_Q P(O,Q) = \sum\limits_Q P(O|Q)P(Q)
+\end{equation}
+with $\dim(O)=N, \dim(Q)=T$ complexity of this task is: $O(N^T)$. However, this problem can be solved in the time $O(N^2 T)$ using the forward algorithm which is an example of a dynamic programming:
+
+\todo{Maybe tikz here?}
+
+\begin{algorithm} Forward algorithm: \\
+	\label{arg:forward}
+	Let us define probability of being in the state $j$ in the time $t$:
+	\begin{align}
+		&\alpha_t(j)=P(o_1,\ldots,o_t,q_t=j) \\
+		\label{eq:hmm_forward_rec}
+		&\alpha_t(j)=\sum\limits_{i=1}^{N} \alpha_{t-1}(i)a_{ij}b_j(o_t)
+	\end{align}
+
+	\begin{enumerate}
+		\item Set:
+			\begin{equation}
+				\alpha_1(j)= a_{0j}b_j(o_1)
+			\end{equation}
+		\item For each j in seq(1,N) and t in seq(1,T) find $\alpha_t(j)$ using \eqref{eq:hmm_forward_rec} 
+		\item Compute desired probability: $P(O) = \alpha_{T}(q_F)=\sum\limits^{N}_{i=1}\alpha_T(i)a_{iF}$
+
+	\end{enumerate}
+\end{algorithm}
+
+In Viterbi algorithm we will try to determine:
+\begin{equation}
+	Q^*=\argmax\limits_{Q} P(Q|O)
+\end{equation}
+Similar to forward algorithm we are able to find dynamic procedure working with complexity $O(N^2 T)$:
+
+\begin{algorithm} Viterbi algorithm: \\
+	Let us define probability of maximum probability over states $q_0,\ldots,q_{t-1}$ of being in the state $j$ in the time $t$ $\nu_t(j)$ and array of most the most probable state $u_t(j)$:
+	\begin{align}
+		&\nu_t(j)=\max\limits_{q_0,\ldots,q_{t-1}} P(o_1,\ldots,o_t,q_t=j) \\
+		\label{eq:hmm_vit_rec}
+		&\nu_t(j)=\max\limits_{i=1}^{n} \nu_{t-1}(i)a_{ij}b_j(o_t) \\
+		&u_t(j)=\argmax\limits_{i=1}^{N} \nu_{t-1}(i)a_{ij}b_j(o_t)
+	\end{align}
+
+\begin{enumerate}
+	\item Define: \\
+		\begin{align}
+			& v_1(j)=a_{0j}b_j(o_1) \\
+			& u_1(j)=0
+		\end{align}
+	\item For each j in seq(1,N) and t in seq(1,T) find $\nu_t(j)$ and $u_t(j)$ using \eqref{eq:hmm_vit_rec} 
+	\item Find best score and the head of the backtracking array:
+		\begin{align}
+			& P^{*}=v_t(q_F)=\max\limits_{i=1}^{N} \nu_{t-1}(i)a_{iF} \\
+			& q_T^*=u_T(q_F)=\argmax\limits_{i=1}^{N} \nu_{t-1}(i)a_{iF} 
+		\end{align}
+	\item Generate sequence of the most probable states using backtracking array:
+		\begin{align}
+			& q_t^*=u_{t+1}(q_{t+1}^*), t \in \{t=T-1,\ldots,1\} \\
+		\end{align}
+	
+\end{enumerate}
+	
+\end{algorithm}
+
+\todo{After: add BW}
+
+\section{GMM - Gaussian mixture model}
+
+One of the key concepts in ASR~is Gaussian distribution \parencite{jurafsky} also known as normal distribution. A~Gaussian distribution is parametrized by a~mean $\mu $ and a~variance~$\sigma ^ 2$. Density function is expressed as:
+
+\begin{equation}
+	f(x;\mu,\sigma) = \frac {1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x-\mu)^2}{2\sigma ^ 2}\right)
+	\label{Gaussion Distribution}
+\end{equation}
+where $\mu \in \mathbb{R}, \sigma \in \mathbb{R}_+$
+Density function over a~continuous space is called probability density function (pdf). However, we fairly rare using univariate GD.
+
+Multivariate gaussian distribution can be defined as:
+\begin{equation}
+	f(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp \left( -\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) \right)
+	\label{multivariate_gaussian}
+\end{equation}
+where $\mu \in \mathbb{R}^n, \Sigma \in \mathbb{R}^{nxn}$ and $\Sigma$ is symmetric and positive semi-definite.
+Extension of \eqref{multivariate_gaussian} is mixture of Gaussians:
+
+Assuming that data X comes from multiple Gaussian distributions, data joint distribution can be represented as $p(x^{(i)},z^{(i)})=p(x^{(i)}|z^{(i)})p(z^{(i)})$, where $z^{(i)}\sim\text{Multinomial}(\phi)$  is a latent variable.
+
+One can define log likelihood of GMM:
+\begin{equation}
+	l(\phi,\mu,\Sigma)=\sum\limits^m_i \log p(x^{(i)}|z^{(i)};\mu,\Sigma) + \log p(z^{(i)};\phi)
+\end{equation}
+
+Assuming that the latent variable is known, one can show that maximum is found in:
+\begin{align}
+\begin{split}
+	\label{gmm_max}
+	& \phi_j = \frac{1}{m}\sum\limits^m_{i=1}1\{z^{(i)}=j\} \\
+	& \mu_j = \frac{\sum\limits_{i=1}^m1\{z^{(i)}=j\}x^{(i)}}{\sum\limits_{i=1}^m1\{z^{(i)}=j\}} \\
+	& \Sigma_j = \frac{\sum\limits_{i=1}^m1\{z^{(i)}=j\}(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum\limits_{i=1}^m1\{z^{(i)}=j\}}
+\end{split}
+\end{align}
+
+If $\phi_j, \mu_j, \Sigma_j$ are known, then log likelihood is maximized~by~$p(z^{(i)}=j|x^{(i)})$:
+\begin{equation}
+	\label{gmm_exp}
+	c_{j}^{(i)}=p(z^{(i)}=j|x^{(i)}) = \frac{p(x^{(i)}|z^{(i)}=j)p(z^{(i)}=j)}{\sum\limits^k_l p(x^{(i)}|z^{(i)}=l)p(z^{(i)}=l)}
+\end{equation}
+
+In the case of $z^{(i)}, \phi_j, \mu_j, \Sigma_j$ being unknown, one can use Expectation-Maximization algorithm in order do find local minimum: 
+
+\begin{algorithm} Expectation-Maximization for GMMs \\
+Repeat until stop criterion is met:
+\begin{indenva}
+Foreach i,j in (range(m),range(k)):
+\begin{indenvb}
+	\begin{enumerate}
+\item Expectation: 
+	Compute array $c$: \eqref{gmm_exp}  
+\item Maximization: 
+	\begin{align}
+		& \phi_j = \frac{1}{m}\suml_i^m \ip{w}_j  \\
+		& \mu_j = \frac{\suml^m_{i=1}\ip{w}_j\ip{x}}{\suml^m_{i=1}\ip{w}_j} \\
+		& \Sigma_j = \frac{\sum_{i=1}^m \ip{w}_j(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m \ip{w}_i}
+	\end{align}
+	\end{enumerate}
+\end{indenvb}
+\end{indenva}
+\end{algorithm}
+One can show that EM is guaranteed to converge \parencite{ng_cs229_2000}.
+
+\todo{After: describe EM}
+
+\section{GMMs and HMMs}
+
+\todo{I: add section}
+
+
+\section{ANN - Artificial neural networks}
+First simulation of a human brain were conducted by \textcite{mcculloch}. Perceptron and its learning rule was introduced by \textcite{rosenblatt} as the valid basis for creation of more complex structure which is neural network. \textcite{hebb1} put foundations for backpropagation learning rule.
+
+In our experiments we are using multilayer neural network, which is taught by variants of gradient descent algorithm, where the partial derivatives are computed with backpropagation. We will start by introducing linear and logistic regression as neural network can be thought as composition of logistic and linear regression. Additionally it is easier formulate problems using them only.
+
+\begin{comment}
+\subsection{Perceptron}
+Perceptron can be defined as a step function on dot product $z = \theta^T x$:
+\[
+ g(z) =
+  \begin{cases} 
+      0 \hfill & z < 0 \\
+      1 \hfill & z \geq 0 \\
+  \end{cases}
+\]
+
+If we put $h_\theta(x)=g(\theta^Tx)$ as our hypothesis then we can define perceptron learning rule as:
+
+\begin{equation}
+	\theta \equiv \theta + \alpha(y^{(i)}-h_\theta(x^{(i)}))x^{(i)} 
+\end{equation}
+
+However perceptron is very difficult to handle in terms of probability or maximum likelihood estimator (\textcite{ng_cs229_2000}). We will focus more on linear and especially on logistic regression: 
+
+\end{comment}
+
+\subsection{Linear regression}
+Random variable $y^{(i)}$ is created on the base of another random variable:
+
+\begin{equation}
+	y^{(i)}=\theta^Tx^{(i)} + \epsilon^{(i)}
+	\label{linear_cond_variable}
+\end{equation}
+
+\newcommand\iid{i.i.d.}
+\newcommand\pN{\mathcal{N}}
+where $\epsilon^{(i)}$ is a random variable which causes distribution in measurement process. We assume that \iid~$\epsilon^{(i)} \sim \pN(0, \sigma^2)$ with unknown $\sigma^2$. Therefore:
+
+\begin{equation}
+	p(\epsilon^{(i)}) = \frac {1}{\sqrt{2\pi}\sigma}\exp\left(- \frac{(\epsilon^{(i)})^2}{2\sigma^2} \right) 
+\end{equation}
+which combined with \eqref{linear_cond_variable} implies:
+
+\begin{equation}
+	p(y^{(i)}|x^{(i)};\theta) = \frac {1}{\sqrt{2\pi}\sigma}\exp\left(- \frac{(y^{(i)}-\theta^Tx^{(i)})^2}{2\sigma^2} \right) 
+\end{equation}
+given matrices data X and targets $y$, we are able to define likelihood function:
+
+\begin{equation}
+	L(\theta;X,y) = p(y|X;\theta)
+\end{equation}
+we define it as:
+
+\begin{equation}
+	L(\theta;X,y) = \prod\limits_{i=1}^m p(y^{(i)}|x^{(i)};\theta)
+\end{equation}
+we should find $\theta$ which maximize $L(\theta)$. It is easier to maximize log likelihood~$l(\theta)$:
+
+\begin{equation}
+	\max\limits_{\theta}  l(\theta;X,y) =  \max\limits_\theta \left( m\log{\frac{1}{\sqrt{2\pi}\sigma}} - \frac{1}{2\sigma^2}\sum\limits^{m}_{i=1}(y^{(i)}-\theta^Tx^{(i)})^2 \right)
+\end{equation}
+
+Thus, we would like to minimize $J(\theta)=\frac{1}{2}\sum\limits^{m}_{i=1}(y^{(i)}-\theta^Tx^{(i)})^2$. $J(\theta)$ is called mean square error (MSE) cost function, but it makes sense mostly in linear regression.
+
+\subsection{Logistic regression}
+
+In speech recognition there is focus on $y \in \{0,\ldots,n\}$ instead of $y \in \mathbb{R}$. This problem is solved by using Softmax layer which is covered in subsection \ref{softmax}. We will on a binary problem, when $y \in \{0,1\} $. Starting from linear regression, $f(z), z = \theta^Tx \in \mathbb{R}$ should give probability of belonging to specific class:
+\begin{align}
+	& P(y=1|x;\theta) = h_\theta(x) \\
+	& P(y=0|x;\theta) = 1-h_\theta(x) \\
+	& P(y|x;\theta) =  h_\theta(x)^y + (1-h_\theta(x))^{(1-y)}
+\end{align}
+
+Now we are able to define and minimize log likelihood of logistic regression:  
+
+\begin{equation} 
+	\max\limits_\theta l(\theta;X,y) = \max\limits_\theta \sum\limits^{m}_{i=1}y^{(i)}\log{h_\theta(x^{(i)})}+(1-y^{(i)})\log(1-h_\theta(x^{(i)})
+\end{equation}
+For logistic regression cost function is defined as: $J(\theta)=l(\theta)$. At last we should define $f(z)$ mapping function. Using General Linear Models \parencite[p. 26]{ng_cs229_2000}, one  can formulate sigmoid (logistic function):
+
+
+\begin{equation} 
+	f(z)=\frac{1}{1+\exp(-\theta^Tx)}
+\end{equation}
+
+
+\todo{NEW}
+\subsection{Softmax}
+\label{softmax}
+When random variable y belongs to many classes $y \in \{0,\ldots,k,\ldots,n\}$, one should use softmax regression (multinomial logistic regression). Similar to logistic regression we estimate probability of $P(y = k|x;\theta)$:
+\begin{equation}
+	P(y = k|x;\theta)=\frac{1}{\sum\limits^{n}_{i=1}\exp(\theta^{(i)T}x)} \exp(\theta^{(k)T}x)
+\end{equation}
+We define cost function as:
+\begin{equation}
+	J(\theta)=-\left[\sum\limits^m_{i=1} \sum\limits^n_{k=1} 1\left\{ y^{(i)}=k \right\}   \log\frac{\exp(\theta^{(k)T}x^{(i)})}{\sum\limits^{n}_{i=1}\exp(\theta^{(i)T}x^{(i)})}  \right]
+\end{equation}
+In fact one can show equality between logistic regression and softmax regression with $n=1$.
+
+
+\subsection{Gradient descent}
+Gradient descent \parencite{boyd_convex_2004} is one of the most popular methods used in the unconstrained optimization problems. We are trying to solve problem: 
+
+\begin{equation}
+	x^{*}=\argmin\limits_{x \in \mathcal{R}^n}f(x)
+\end{equation}
+when $f(x)$ is convex all locals minimas are also global minimas. In linear regression cost function $J(\theta)$is convex. However, for additional assumptions are needed gradient descent to find global optimum. 
+
+\begin{algorithm} Gradient descent
+	\begin{enumerate}
+		\item Set initial starting point $x_0$
+		\item Repeat until converges:
+			$$x^{k}=x^{k-1}-\alpha_k \nabla f(x^{k-1})$$
+		\item Stop at some point 
+	\end{enumerate}
+in the step 2 $\alpha_k=c$ can be constant or changing over time $\alpha_k=\frac{1}{k}$
+Choosing bad $\alpha_k$ can lead to problems with convergence.
+Step 3 also involves multiple strategies such as: ``early stopping'', ``gradient fading''.
+\end{algorithm}
+
+\begin{theorem} Gradient descent is guaranteed to find global minimum only if
+	\begin{enumerate}
+		\item f is convex
+		\item solution $x^{*}$
+		\item $\nabla f(x)$ is Lipschitz continuous
+	\end{enumerate}
+\end{theorem}
+if those conditions are not fulfilled, solution will be only a local optimum.
+
+%\subsection{General Linear Model}
+
+\todo{Add graph in graphviz? or tikz? }
+\subsection{Feedforward Neural Network}
+
+One of the first successful uses of feedforward neural networks were made by \textcite{widrow} when Adaline neural network was created for `echo filtering`. 
+
+\begin{definition} A neuron - a function:
+\begin{align}
+	& z_j=\sum\limits^n_{j=1} W_{ij}x_j+b_j \\
+& a_j=f(z_j) 
+\end{align}
+where $f$ is an activation function and $a_j$ is a $j$ neuron.
+\end{definition}
+example of a neuron is logistic or linear regression.
+
+\begin{definition} A layer - a function composed of multiple layers:
+\begin{align}
+& z = Wx+b \\
+& a=f(z) 
+\end{align}
+where $f$ is an activation function.
+\end{definition}
+example of a neuron is logistic or linear regression.
+
+
+\begin{definition} A neural network - a function consisting of multiple layers:
+\begin{align}
+	& a^{(1)}=x \\
+	& z^{(l)}=W^{(l)}a^{(l)}+b^{(l)} \\
+	& a^{(l+1)}=f(z^{(l)}) \\
+	& h_{W,b}(x)=a^{(n_l)}
+\end{align}
+where $n_l$ is the number of layers and $h_{W,b}$ is an activation of the output layer. 
+\end{definition}
+
+However, not so later \textcite{minsky} published a book in which pointed that perceptron cannot classify simple problem which is logical xor and there is no good rule for learning multilayer neural network.
+Situation was changed after publication of PHD thesis \parencite{werbos} which described `backpropagation algorithm`:
+
+\begin{algorithm}
+Backpropagation algorithm:
+	\begin{enumerate}
+		\item Run feedforward pass, keeping activations $z^{l}$ for all layers except the last one.
+		\item Compute the error term in the last layer: $\delta^{n_l}=\frac{\partial}{\partial z^{(n_l)}} J(\theta;x)$ 
+		\item For all layers except the last one: $\delta^{(l)}=(W^{(l)T}\delta^{(l+1)})\circ f'(z^{(l)})$, where $\circ$ is hadamard product.
+		\item Find partial derivatives: 
+
+\begin{align*}
+& \nabla_{W^{(l)}}J(W,b;x,y)=\delta^{(l+1)}(a^{(l)})^T \\
+& \nabla_{b^{(l)}}J(W,b;x,y)=\delta^{(l+1)} 
+\end{align*}
+	\end{enumerate}
+\end{algorithm}
+
+\todo{NEW}
+
+\textcite{cybenko_approximation_1989} proofed that multilayer neural network with sigmoid activation function is universal approximator:
+\begin{theorem}
+
+Let $\sigma$ be a general sigmoidal function. Then finite sums of the form:
+\begin{equation}
+	G(x)=\sum\limits^N_{j=1}\alpha_j\sigma(y_jx+\theta_j)
+\end{equation}
+are dense in $C(I_n)$. In other words, given any $f \in C(I_n)$ and $\epsilon > 0$, there is a sum, $G(x)$ of the above form, for which
+
+\begin{equation}
+	\left|G(x) - f(x)\right| < \epsilon
+\end{equation}
+for all $x \in I_n$
+
+This theorem allows to assume that every for every function there exists neural network that approximates it with pointed accuracy.
+\end{theorem}
+
+\section{Deep Neural Networks}
+

@@ -1,0 +1,137 @@
+\chapter{Experiment}
+
+Done:
+
+
+
+\begin{center}
+
+	2 layers, 1024 hidden neurons, 20\% cross-validation set, DBN
+\begin{tabular}{ |c|c|c|c|c|c| } 
+\hline
+ fold &1&2&3&4&5 \\ 
+ \hline
+ WER dev &24.1&23.9&23.6&24.2&23.9 \\ 
+ \hline
+ WER test &23.7&24.0&23.8&23.7&23.6 \\ 
+ \hline
+\end{tabular}
+
+\begin{tabular}{ |c|c|c|c|c|c|c| } 
+\hline
+Set size &20\%& 35\%& 50\%& 60\% & 70\%& 80\% \\ 
+ \hline
+ WER dev &27.9&26.4&25.0&24.5& 24.1 & 23.9 \\ 
+ \hline
+ WER test &29.4&27.1&25.3&24.6& 24.4 & 23.6 \\ 
+ \hline
+\end{tabular}
+
+Recheck me again \\
+
+6 layers, 2048 hidden neurons, 20\% cross-validation set, DBN 
+\begin{tabular}{ |c|c|c|c|c|c|c| } 
+\hline
+Set size &20\%& 35\%& 50\%& 60\% & 70\%& 80\% \\ 
+ \hline
+ WER dev &27.6&25.3& 24.2 & 23.9 &23.5&22.7 \\ 
+ \hline
+ WER test &28.6&26.1&24.4&23.5&23.0&22.3 \\
+ \hline
+\end{tabular}
+
+
+MFCC + Delta features \\
+\begin{tabular}{ |c|c|c|c|c|c|c|c|c|c| } 
+\hline
+Feature  &delta tri1 & delta tri2 & delta tri2 &delta tri2 compl \\
+\hline
+Set size  &20\%& 20 & 80\%& 80  \\
+ \hline
+ WER dev  &26.8& 25.7 & 23.6 & 21.1 \\
+ \hline
+ WER test  &27.7& 26.5 & 23.0 & 20.6 \\
+ \hline
+\end{tabular}
+
+Fbank \\
+\begin{tabular}{ |c|c|c|c|c|c|c|c|c|c| } 
+\hline
+Feature type & delta fbank & fbank &fbank & delta fbank  \\
+\hline
+Set size & 80 & 20 & 80 & 20   \\
+ \hline
+ WER dev & 20.7 & 25.3 & 21.1 & 24.2  \\
+ \hline
+ WER test & 19.7 & 26.0 & 20.2 & 24.5  \\
+ \hline
+\end{tabular}
+
+LDA + MLTT \\
+\begin{tabular}{ |c|c|c|c|c|c|c| } 
+\hline
+Feature type & MLTT + LDA GMM & MLLT delta & MLTT & MLTT \\
+\hline
+Set size & 100 & 20 & 80 & 20 \\
+ \hline
+ WER dev & 26.6 & 26.2 & 21.9 & 25.3 \\ 
+ \hline
+ WER test & 25.4 & 25.4 & 20.4 & 24.9  \\
+ \hline
+\end{tabular}
+
+Better LM - probabilities in lexicon \\
+\begin{table}[h!]
+\centering
+\begin{tabular}{ llllll } 
+\hline
+Feature type & delta MLTT & delta fbank \\
+\hline
+Set size &  80 & 80 \\
+ \hline
+ WER dev &  21.7 & 20.7 \\ 
+ \hline
+ WER test &  20.0 & 19.4 \\
+ \hline
+\end{tabular}
+\caption{Comparison of various pretraining types}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ llllllll } 
+\toprule
+Feature type & 6hid nopre & 6hid dnnrbm & nopre & dnnrbm & nopre \\
+\midrule
+Set size &  80 & 80 & 80 & 80 & 20 \\
+WER dev &  18.2 & 18.1 & 20.7 & 20.7 & 25.0  \\ 
+WER test &  17.5 & 17.0 & 19.8 & 19.4 & 25.5 \\
+xEnt 1st iter. & 2.89/3.32 & 2.35/2.71 &2.8/3.36 &2.46/2.91 & \\
+ xEnt last iter.  & 2.16/2.52 & 1.9/2.1 & 2.39/2.65  & 2.03/2.28 & \\
+ FA iter1 & 35.18/28.19 & 44.45/35.69 & 37.1/28.0 & 42.97/34.54 & \\
+ FA last & 45.52/39.46 & 53.49/47.5 & 42.1/37.6 & 49.26/44.57 & \\
+ \bottomrule
+\end{tabular}
+\caption{Comparison of various pretraining types}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ lll } 
+\toprule
+ Feature type & lstm & lstm \\ 
+\midrule
+Set size & 20 & 80 \\
+WER dev & 22.1 & 18.4 \\
+WER test & 21.0 & 17.4 \\
+ \bottomrule
+\end{tabular} 
+\caption{LSTM}
+\label{tab:lstm_scores}
+\end{table}
+
+\end{center}
+
+\begin{tabpo}[hello]
+prof table \\
+\end{tabpo}

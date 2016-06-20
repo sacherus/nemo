@@ -1,0 +1,30 @@
+\chapter{Data}
+\section{Tedlium corpus}
+
+\todo{I: 1) Available on is proper. 2) Disfluencies is plural}
+
+The tedlium corpus\footnote{Available on http://www-lium.univ-lemans.fr/en/content/ted-lium-corpus. } used in our experiments origins from IWSLT (International Workshop on Spoken Language Translation) 2011 translation competition in which one's task was to extract and translate TED\footnote{Technology, Entertainment and Design conference} talks. The biggest advantage of the corpus is its wide availability: corpus was released \parencite{rousseau_ted-lium:_2012} under \textcite{_creative_????}. Transcriptions were created by the speakers, but were missing speech disfluencies which occurred during talks (ex. repetitions), so corpus was preprocessed. Originally training data consisted of 216 hours of talks (files) and 698 speakers. However, in multistage process 774 talks and 666 speakers consisting of 118 hours speech in training corpus and 19 talks with 19 speakers consisting of 4 hours of speech were filtered out. Corpus was further enhanced by \textcite{rousseau_enhancing_2014}. However, we are using first release of the tedlium corpus. The 12.4\% and 13.5\% WER score was reported in the latest work using DNN approach, but with a different LM. The quick summary of the corpus can be found in the table \ref{tedlium_corpus_table}.  
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ llll } 
+\toprule
+ Corpus & Train & Dev & Test \\ 
+\midrule
+ Number of files & 774 & 8 & 11 \\ 
+ Length & 118h & 1.6h  & 2.6h  \\ 
+ Utterances & 56.8k & 507 & 1155 \\ 
+ Speakers & 666 & 8 & 11 \\ 
+ WER & X & 12.4\% & 13.5\% \\ 
+ \bottomrule
+\end{tabular} 
+\caption{Summary of tedlium corpus}
+\label{tedlium_corpus_table}
+\end{table}
+
+\begin{comment}
+\section{Language model}
+Recurrent: \cite{williams_scaling_2015}
+
+\end{comment}
+
