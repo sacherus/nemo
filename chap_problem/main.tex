@@ -1,12 +1,12 @@
 \chapter{Automatic Speech Recognition problem}
-Automatic speech recognition is an extremely complex task. It demands enormous processing power, amount of data and good algorithms which can become similar in a~behavior of human ear or brain. The process can be understood as extracting text information from an audio data, often represented as PCM (Pulse Code Modulation) ~file. Multiple problems arise when we try to implement basic system: microphone noise, speech defects, variety of speaker, accents, infinite size of vocabulary and many others. Many fields of computer science were adopted in the problem:~gaussian mixture models, hidden Markov models, dynamic programming, decision trees, Fourier transform. 
+Automatic speech recognition is an extremely complex task. It demands an enormous processing power, a big amount of the data and a good algorithms which can become similar in a~behavior of human ear or brain. The process can be understood as extracting text information from an audio data, often represented as PCM (Pulse Code Modulation) ~file. Multiple problems arise when we try to implement basic system: microphone noise, speech defects, variety of speaker, accents, infinite size of vocabulary etc. Many fields of computer science are being used in the problem:~Gaussian mixture models, hidden Markov models, dynamic programming, decision trees, Fourier transform. 
 
 \begin{definition}
 	Automatic speech recognition (ASR) - given audio input stream $I$ represented as observation $O$ find the sentence $W\in L$ which was said by the speaker. 
 \end{definition}
 
 
-Unfortunately this definition seems to be missing many other definitions and is ambiguous: there is small phonetic difference, between:~``making ends meet'', ``making hens meat'' and even human expert cannot tell difference between those 2 sentences. Due to this equivocality, some measure is needed which will allow us to evaluate which sentence is proper. The most natural and practical measure is probability $P()$.
+Unfortunately this definition seems to be missing many other definitions and is ambiguous: there is small phonetic difference, between:~``making ends meet'', ``making hens meat'' and even human expert cannot tell difference between those 2 sentences. Due to this equivocality, some measure is needed which will allow us to evaluate which sentence is proper. The most natural and practical measure is the probability $P()$.
 
 
 Let us introduce some missing definitions:
@@ -39,5 +39,16 @@ W^*=\underset{W \in L}{\operatorname{argmax}} P(W|O)
 
 \end{definition}
 
+\section{Previous approaches}
+The first algorithms for speech recognition involved matching distances on some predefined templates \parencite{juang_automatic_2005}. In 1980's two important models were introduced: n-gram model as a type of a language model and hidden Markov model. Those 2 techniques allow for large vocabulary, statistical based speech recognition. Later, in the 1990's constant hardware updates and better algorithms improved decoding time and allowed for real-time, continuous systems. Surprisingly revolution in speech recognition has stopped for about 10 years. Until 2010 almost all techniques involved Gaussian mixture models \parencite{yu_automatic_2015}. Hybrid models from 90's which substituted Gaussian mixtures did not bring expected results. However, famous paper by \textcite{hinton_fast_2006} showed how to teach deep models, which had problems with convergence, caused by vanishing or exploding gradient. Since 2010 there is rapid improvement in the field of the speech recognition.
 
+\section{State of the art}
+As mentioned in a previous section state of the art involves using neural networks with many layers (deep neural networks), which are being extensively examined by researchers. Deep learning techniques used in speech recognition consists of:
 
+\begin{enumerate}
+	\item Pretraining with restricted Boltzmann machines with contrastive divergence procedure \parencite{hinton_fast_2006}
+	\item Pretraining with deep denoising autoencoder \parencite{lu_speech_2013}
+	\item Using rectified linear units (ReLU) \parencite{zeiler_rectified_2013}
+	\item Convolution neural networks (CNN) \parencite{abdel-hamid_applying_2012}
+	\item Long short term memory (LSTM) recurrent neural networks (RNN) \parencite{graves_speech_2013}
+\end{enumerate}

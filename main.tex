@@ -3,6 +3,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[polish,english]{babel}
 \usepackage[T1]{polski}
+\usepackage{ae,aecompl} %better fonts
+%\usepackage{newpxtext,newpxmath}
+%\usepackage{lmodern}
+
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amsmath}
@@ -13,17 +17,16 @@
 \newenvironment{indenva}{\begin{adjustwidth}{1cm}{}}{\end{adjustwidth}}
 \newenvironment{indenvb}{\begin{adjustwidth}{1cm}{}}{\end{adjustwidth}}
 
-\newenvironment{tabpo}[1]{%
-\begin{table}[h!]
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+
+\usepackage{xparse} %\NewDocumentEnvironment
+\NewDocumentEnvironment{tabp}{o}{%
+	\begin{table}[h!]\caption{#1}
 	\centering
-	\begin{tabular}{lllllllll}
-	\toprule
-#1}
-{%
-\bottomrule
-\end{tabular}
-\caption{Arg:}
-\end{table}}
+	\begin{tabular}{lllllllll}\toprule}
+{\\\bottomrule\end{tabular}\end{table}}
 
 \usepackage[
 backend=biber,
@@ -53,10 +56,13 @@ citestyle=authoryear,
 
 %\DeclarePairedDelimiter{\Prfences}{[}{]}
 \newcommand{\ip}[1]{#1^{(i)}}
+\newcommand{\fone}[1]{\frac{1}{#1}}
+\newcommand{\fpart}[1]{\frac{\partial}{\partial #1}}
 
 %defining abs operator
 \usepackage{mathtools}
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
 
 %appendix page
 \usepackage{appendix}
@@ -74,7 +80,12 @@ citestyle=authoryear,
 %\usepackage[all]{nowidow}
 
 %pretty tables
+\usepackage{geometry} % margin
+
 \usepackage{booktabs}
+
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist 
 
 \bibliography{my}
 \bibliography{zotero}
@@ -83,45 +94,12 @@ citestyle=authoryear,
 \title{}
 \author{Piotr Kowenzowski}
 \date{\today}
-\maketitle
+\input{title.tex}
+\newpage
 \tableofcontents
 \newpage
 
-Cel pracy:
-1) porownac rowne techniki DNN
-2) wytrenowac/przebic jak najlepszy model 
-
-Tasks:
-
-\begin{enumerate}
-{\color{green}
-\item Use zolando(?) to generate bibliography entry
-\item Add chapter about data origin}
-\item Add subchapter about language model
-\item Read more book about signal processing
-\item Read Wojtek's and Autoencoder work
-\end{enumerate}
-
-\rule{\textwidth}{1pt}
-
-Experiments
-
-high priority:
-
-\begin{enumerate}
-{\color{green}
-\item MFCC + delta
-\item GMMs on LDA/MLLT + more tied states
-\item MLLT DNN
-\item Fbanks
-\item Fbanks + delta}
-\item Fix language rescoring
-\item no pretraining
-\end{enumerate}
-
-\rule{\textwidth}{1pt}
-lower priority:
-
+\begin{comment}
 \begin{enumerate}
 \item More complex DNN (6 depth, 2048 size)  
 \begin{enumerate}
@@ -145,6 +123,7 @@ lower priority:
 \end{enumerate}
 \item Discriminative training
 \end{enumerate}
+\end{comment}
 
 \newpage
 
@@ -154,16 +133,19 @@ lower priority:
 \todo{Structure of thesis}
 
 
-
+\part{Automatic speech recognition problem}
 \input{chap_intro/main.tex}
 
 \input{chap_problem/main.tex}
 
+%\input{chap_previous/main.tex}
+
+\part{Models and features extraction}
 \input{chap_processing/main.tex}
 
 \input{chap_models/main.tex}
 
-\input{chap_previous/main.tex}
+\part{Experiment and results}
 
 \input{chap_data/main.tex}
 
@@ -176,10 +158,6 @@ lower priority:
 \addappheadtotoc
 
 \input{app/backpropag.tex}
-
-%\newpage
-%\input{qa/main.tex}
-%\newpage
 
 \newpage
 

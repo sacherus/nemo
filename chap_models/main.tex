@@ -1,13 +1,7 @@
 \chapter{Models}
+This chapter brings deep insight of models used in our experiments. We are starting by describing Gaussian mixture models, then hidden Markov models, which are as the first steps in speech recognition process. Then we are create valid basis for the state-of-the-art technique \parencite{mohamed_phone_2010}
 
 \todo{Change order of HMM and GMM}
-
-\section{MFCC - Mel frequency cepstrum}
-\todo{I: add section about MFCC}
-
-
-
-
 
 \section{HMM - Hidden Markov model}
 
@@ -184,9 +178,9 @@ Foreach i,j in (range(m),range(k)):
 	Compute array $c$: \eqref{gmm_exp}  
 \item Maximization: 
 	\begin{align}
-		& \phi_j = \frac{1}{m}\suml_i^m \ip{w}_j  \\
-		& \mu_j = \frac{\suml^m_{i=1}\ip{w}_j\ip{x}}{\suml^m_{i=1}\ip{w}_j} \\
-		& \Sigma_j = \frac{\sum_{i=1}^m \ip{w}_j(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m \ip{w}_i}
+		& \phi_j = \frac{1}{m}\suml_i^m \ip{c}_j  \\
+		& \mu_j = \frac{\suml^m_{i=1}\ip{c}_j\ip{x}}{\suml^m_{i=1}\ip{c}_j} \\
+		& \Sigma_j = \frac{\sum_{i=1}^m \ip{c}_j(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m \ip{c}_i}
 	\end{align}
 	\end{enumerate}
 \end{indenvb}
@@ -403,5 +397,106 @@ for all $x \in I_n$
 This theorem allows to assume that every for every function there exists neural network that approximates it with pointed accuracy.
 \end{theorem}
 
-\section{Deep Neural Networks}
+\section{DL - Deep learning}
+In the machine learning community there is no precise definition when we can call any algorithm as deep learning. According to \textcite{bengio_greedy_2007} we can define: ``shallow architecture, i.e., only two levels of data-dependent computational elements. This is also true of feedforward neural networks with a single hidden layer''. One can ask another question: ``why deep neural networks are better that wide, shallow architectures with this same number of parameters?''. Again \textcite{bengio_greedy_2007} answers: ``the parity function with d inputs
+requires $O(2^d)$ examples and parameters to be represented by a Gaussian SVM (Bengio et al., 2006),
+$O(d^2)$ parameters for a one-hidden-layer neural network, $O(d)$ parameters and units for a multi-layer
+network with $O(\log_2 d)$ layers, and $O(1)$ parameters with a recurrent neural network''.
+This raises the question: ``deep neural networks (DNN) were not used more than the other machine learning algorithms?''. 
 
+\todo{Vanishing gradient and Unsupervised learning}
+
+\section{RBM - Restricted Boltzmann machine}
+
+RBM is a undirected graphical model, which model data input distribution $x$ using latent random variable $h$ using energy based function. It is differ from (unrestricted) Boltzmann machine in sense that it does not have connections in the visible and the hidden layer. Let us define energy function for RBM:
+
+\begin{align}
+E(x,h) & = -h^TWx -c^Tx - b^Th \\
+& =-\suml_j\suml_k W_{jk}h_jx_k-\suml_k c_k x_k - \suml_j b_j h_j
+\end{align}
+$W$ is connection matrix between hidden $h$ and visible layer $x$, b and c are sets of biases respectively. 
+Joint distribution is exponentially proportional to energy function:
+
+\begin{equation}
+	p(x,h)=\frac{\exp(-E(x,h))}{Z}
+\end{equation}
+where Z is normalizer and is called partition function. 
+
+We are able to explicitly compute $p(h|x)$ and $p(x|h)$:
+\begin{align}
+	p(h|x)&=\frac{p(x,h)}{\suml_{h'}p(x,h)} \\
+	&= \frac{\exp(h^TWx+c^Tx+b^Th)/Z}{\suml_{h' \in \{0,1\}^H} \exp(h'^TWx+c^Tx+b^Th')/Z} \\
+	&= \frac{\exp(\suml_j h_jW_jx + b_jh_j)}{\suml_{h_1' \in \{0,1\}} \ldots \suml_{h_H' \in \{0,1\}} \exp(\suml_j h_j' w_jx+b_jh_j')} \\
+	& \ldots \\
+	& =  \prod_j \frac{\exp(h_jW_jx + b_j h_j)}{1+\exp(b_j + W_j x)} \\
+	& =  \prod_j \frac{1}{1+\exp(-b_j-W_jx)} \\
+	& =  \sigma(Wx+b) \\
+	& = \prod_j p(h_j|x)
+\end{align}
+
+Again we we will try use log likelihood in order to find best estimator for W,c,b. Let us derivate log likelihood of RBM:
+
+\begin{align}
+	\fpart{w_{ij}} \suml_c \log p(x) & = \\
+	&= \fpart{w_{ij}} \left( \sum_c \log \sum_h \exp(-E(x,h)) - \log \sum_v \sum_h \exp(-E(v,h))   \right) \\
+	&= \ldots \\
+	&=  - \sum_{x \in X} \frac{\suml_h \exp(-E(x,h)) \frac{\partial E(x,h)}{\partial w_{ij}}}{\suml_h \exp(-E(x,h))}
+	+ \sum_{x \in X} \frac{\suml_v \suml_h \exp(-E(x,h)) \frac{\partial E(v,h)}{\partial w_{ij}}}{\suml_v \suml_h \exp(-E(v,h))} \\ 
+	& = E_h\left[\frac{\partial E(x,h)}{\partial w_{ij}} | x\right] - E_{x,h}\left[\frac{\partial E(x,h)}{\partial w_{ij}} \right]
+\end{align}
+First term is called ``positive phase'' and the second one is called ``negative phase'' and plays role as regulizer. 
+
+\begin{align} 
+	E_h\left[\frac{\partial E(x,h)}{\partial w_{ij}} | x\right] &  = E_h\left[-h_j x_k|x \right]  \\
+	& = \sum_{h_j \in \{0,1\}} -h_jx_k p(h_j|x)  \\
+	& = \sigma(Wx+b)
+\end{align}
+Therefore,
+
+\begin{align} 
+	& E_h\left[\frac{\partial E(x,h)}{\partial W} | x\right] =  -h(x)x^T \\
+	& E_h\left[\frac{\partial E(x,h)}{\partial b} | x\right] =  -h(x) \\
+	& E_h\left[\frac{\partial E(x,h)}{\partial c} | x\right] =  -x \\
+	& h(x)_i \equiv p(h_i=1|x)
+\end{align}
+
+Finding second term explicitly requires an exponential number of steps. Process of finding expectation of a partial derivative of a energy function over joint distribution is called Gibbs sampling. One can use this procedure to get joint distribution for expected value:
+
+\begin{enumerate}
+	\item Start with an initial value $(\theta_1^{(0)}, \theta_2^{(0)})$ \\
+
+Repeat until equilibrium is achieved:
+\begin{indenva}
+\begin{enumerate}
+	\item sample $\theta_1^{(j)} \sim p(\theta_1|\theta_2^{j-1})$
+	\item sample $\theta_2^{(j)} \sim p(\theta_2|\theta_1^{j})$
+\end{enumerate}
+\end{indenva}
+\end{enumerate}
+
+This provide us recipe for expected value:
+\begin{equation}
+	\frac{1}{J} \sum_j^J h(\theta^{(j)}) \underset{J}\rightarrow E_p \left[ h(\theta) \right]
+\end{equation}
+When Gibbs sampling is employed for minimizing parameters with gradient descent process is called contrastive divergence with N (CD-N) steps $N=J$. Surprisingly \textcite{hinton_fast_2006} showed that only $N=1$ steps are needed in obtain good results.
+
+\begin{algorithm} Contrastive divergence algorithm (CD-N)
+\item Foreach $\ip{x} \in X$ \\
+
+\begin{indenva}
+\begin{enumerate}
+	\item generate $x^{*}$ using N steps of Gibbs sampling and $\ip{x}$ as a starting point
+	\item use data and reconstruction expectations in order to provide updates for gradient descent alogrithm:
+\begin{indenvb}
+	\begin{align}
+		&\Delta\ip{W} =  h(\ip{x})x^{(t)T} - h(x^*)x^{*T} \\
+		&\Delta\ip{b} =  h(\ip{x}) - h(x^*) \\
+		&\Delta\ip{c} =  \ip{x} - x^*
+	\end{align}
+\end{indenvb}
+\end{enumerate}
+\end{indenva}
+\item repeat until stopping criteria.
+\end{algorithm}
+
+\section{DBN - deep belief network}

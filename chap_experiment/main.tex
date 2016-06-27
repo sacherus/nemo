@@ -1,137 +1,144 @@
 \chapter{Experiment}
 
-Done:
 
+Multiple experiments were conducted using various models and different features. Let us denote some abbreviations which we will be using in this chapter:
 
+\begin{itemize}
+\item TS as the test set
+\item TRS as the training set
+\item WER as the word error rate
+\item xEnt as the softmax loss function
+\item iter. as the iteration
+\item complex as the neural network with more hidden states
+\item ALI\{N\} as the Nth version of alignment
+\item CI as the confidence interval
+\end{itemize}
+ 
 
-\begin{center}
+\section{Results}
+If it is not written down, ``standard'' parameters of a neural network are: 2 layers, 1024 hidden neurons, 20\% cross-validation set extracted from the training test, DBN as the type of a pretraining.
 
-	2 layers, 1024 hidden neurons, 20\% cross-validation set, DBN
-\begin{tabular}{ |c|c|c|c|c|c| } 
-\hline
- fold &1&2&3&4&5 \\ 
- \hline
- WER dev &24.1&23.9&23.6&24.2&23.9 \\ 
- \hline
- WER test &23.7&24.0&23.8&23.7&23.6 \\ 
- \hline
-\end{tabular}
-
-\begin{tabular}{ |c|c|c|c|c|c|c| } 
-\hline
-Set size &20\%& 35\%& 50\%& 60\% & 70\%& 80\% \\ 
- \hline
- WER dev &27.9&26.4&25.0&24.5& 24.1 & 23.9 \\ 
- \hline
- WER test &29.4&27.1&25.3&24.6& 24.4 & 23.6 \\ 
- \hline
-\end{tabular}
-
-Recheck me again \\
-
-6 layers, 2048 hidden neurons, 20\% cross-validation set, DBN 
-\begin{tabular}{ |c|c|c|c|c|c|c| } 
-\hline
-Set size &20\%& 35\%& 50\%& 60\% & 70\%& 80\% \\ 
- \hline
- WER dev &27.6&25.3& 24.2 & 23.9 &23.5&22.7 \\ 
- \hline
- WER test &28.6&26.1&24.4&23.5&23.0&22.3 \\
- \hline
-\end{tabular}
-
-
-MFCC + Delta features \\
-\begin{tabular}{ |c|c|c|c|c|c|c|c|c|c| } 
-\hline
-Feature  &delta tri1 & delta tri2 & delta tri2 &delta tri2 compl \\
-\hline
-Set size  &20\%& 20 & 80\%& 80  \\
- \hline
- WER dev  &26.8& 25.7 & 23.6 & 21.1 \\
- \hline
- WER test  &27.7& 26.5 & 23.0 & 20.6 \\
- \hline
-\end{tabular}
-
-Fbank \\
-\begin{tabular}{ |c|c|c|c|c|c|c|c|c|c| } 
-\hline
-Feature type & delta fbank & fbank &fbank & delta fbank  \\
-\hline
-Set size & 80 & 20 & 80 & 20   \\
- \hline
- WER dev & 20.7 & 25.3 & 21.1 & 24.2  \\
- \hline
- WER test & 19.7 & 26.0 & 20.2 & 24.5  \\
- \hline
-\end{tabular}
-
-LDA + MLTT \\
-\begin{tabular}{ |c|c|c|c|c|c|c| } 
-\hline
-Feature type & MLTT + LDA GMM & MLLT delta & MLTT & MLTT \\
-\hline
-Set size & 100 & 20 & 80 & 20 \\
- \hline
- WER dev & 26.6 & 26.2 & 21.9 & 25.3 \\ 
- \hline
- WER test & 25.4 & 25.4 & 20.4 & 24.9  \\
- \hline
-\end{tabular}
-
-Better LM - probabilities in lexicon \\
-\begin{table}[h!]
-\centering
-\begin{tabular}{ llllll } 
-\hline
-Feature type & delta MLTT & delta fbank \\
-\hline
-Set size &  80 & 80 \\
- \hline
- WER dev &  21.7 & 20.7 \\ 
- \hline
- WER test &  20.0 & 19.4 \\
- \hline
-\end{tabular}
-\caption{Comparison of various pretraining types}
-\end{table}
-
-\begin{table}[h!]
-\centering
-\begin{tabular}{ llllllll } 
-\toprule
-Feature type & 6hid nopre & 6hid dnnrbm & nopre & dnnrbm & nopre \\
+\begin{tabp}[5-fold cross validation $\alpha=0.975$] 
+\label{t:5_fold}
+& \multicolumn{5}{c}{Fold} & \multicolumn{3}{c}{Statistics}\\
+\cmidrule(r){2-6} \cmidrule(r){7-9}
+ TS type &1&2&3&4&5 & $\mu$ & $\sigma$ & CI \\ 
 \midrule
+WER dev &24.1&23.9&23.6&24.2&23.9 & 23.94 & 0.23 & $\mu\pm 0.3$   \\ 
+WER test &23.7&24.0&23.8&23.7&23.6 & 23.76 & 0.15 & $\mu\pm 0.2$ 
+\end{tabp}
+
+First experiment was conducted in order to check influence of using different subset of data (table \ref{t:5_fold}). CI for the dev and test test sets equals $\mu\pm 0.3$ and $\mu\pm 0.2$ respectively. In further experiments we will assume that if the difference is greater that CI intervals than results are statistically significant. One should conduct experiments every time when model is changed. However, due to expensive computing time we decided to drop this procedure (1 day on GPU per one cell in a table).
+
+\begin{tabp}[Reducing data set size]
+\label{t:reduced1}
+& \multicolumn{6}{c}{Training set size } \\
+\cmidrule(r){2-7}
+TS type &20\%& 35\%& 50\%& 60\% & 70\%& 80\% \\ 
+\midrule
+  WER dev &27.9&26.4&25.0&24.5& 24.1 & 23.9 \\ 
+  WER test &29.4&27.1&25.3&24.6& 24.4 & 23.6  
+\end{tabp}
+
+\begin{tabp}[Reduced data set size. Increased complexity of the model: 6 layers, 2048 hidden neurons] 
+\label{t:reduced2}
+& \multicolumn{6}{c}{Training set size } \\
+\cmidrule(r){2-7}
+TS type &20\%& 35\%& 50\%& 60\% & 70\%& 80\% \\ 
+\midrule
+  WER dev &27.6&25.3& 24.2 & 23.9 &23.5&22.7 \\ 
+  WER test &28.6&26.1&24.4&23.5&23.0&22.3 
+\end{tabp}
+
+In the next experiments (refer tables \ref{t:reduced1} and \ref{t:reduced2}) we are testing how reduced data size is affecting WER results, so would be able to use smaller training sets. As expected, increasing training set size improve results and the biggest improvement is found when we are moving from 20\% to 35\% of the data. Because there is drop in the every step, we decided to use maximum possible amount of the data available in the further experiments. When comparing results in the ``standard'' and ``complex'' architectures, there is 1.2\% and 1.3\% relative improvement. Although, some tests with less data (20\%) were made, when checking sanity of the scripts. Despite of including 20\% results, we will not focus on them.
+
+
+\begin{tabp}[Delta features on top of MFCC and better alignments] 
+& & \multicolumn{3}{c}{Model type} \\
+\cmidrule(r){3-5}
+TS type  & TRS size  &delta ALI1& delta ALI2 &delta ALI2 complex \\
+\midrule
+  WER dev & 20\%  &26.8& 25.7 & X \\
+  WER test & 20\%  &27.7& 26.5 & X \\
+  WER dev & 80\%  &X&   23.6 & 21.1 \\
+  WER test & 80\%  &X& 23.0 & 20.6 
+\end{tabp}
+
+In the third experiment we used improved alignments (ALI2, based on GMM LDA) and delta MFCC features. We can observe improvement by 1.1\%/0.9\% with delta MFCC and by 1.1\%/1.2\% when using better alignment. We will use delta features in later and ALI2 as alignment, because WER improves significantly.
+
+\begin{tabp}[Plain fbank and delta fbank features] 
+\label{t:fbank}
+&& \multicolumn{2}{c}{Feature type} \\
+\cmidrule(r){3-4}
+TS type & TRS size & plain & delta  \\
+\midrule
+  WER dev & 20\% & 25.3 & 24.2  \\
+  WER test & 20\% & 26.0 & 24.5 \\
+  WER dev & 80\% &  21.1 & 20.7 \\
+  WER test & 80\% & 20.2 & 19.7 
+\end{tabp}
+
+As expected, fbank features improve results: 2.9\%/3.3\% when comparing with corresponding MFCC features (table \ref{t:fbank}). Using delta features instead of plain gives improvement on 0.4\%/0.5\% level.
+
+\begin{tabp}[LDA + MLTT feature type on the top of MFCC] 
+\label{t:lda}
+& \multicolumn{4}{c}{Feature type} \\
+\cmidrule(r){2-5}
+ & LDA GMM & LDA & LDA delta & delta LDA \\
+\midrule
+TRS size & 100 & 20 & 20 & 80 \\
+WER dev & 26.6 & 26.2  & 25.3 & 21.9\\ 
+WER test & 25.4 & 25.4  & 24.9 & 20.4
+\end{tabp}
+
+In table \ref{t:lda} we tried using decorrelated features (LDA), what is not advised in when using a neural network, because it can decorrelate features using multiple hidden layers. We decided to stick to the fbank features. 
+
+\begin{tabp}[Improved LM - dictionary with probabilities in the lexicon reflecting state of the training set. 0.80 training set size was used]
+	\label{t:dictionary}
+& \multicolumn{2}{c}{Feature type} \\
+\cmidrule(r){2-3}
+TS type & delta LDA & delta fbank \\
+\midrule
+  WER dev &  21.7 & 20.7 \\ 
+  WER test &  20.0 & 19.4
+\end{tabp}
+
+When reading original scripts, we discover that we can improve the LM by improving the lexicon: adding probabilities of the variants of the words from training set. We found the results being almost in the previously defined confidence interval: -0.2\%/0.4\% for LDA and -0.0\%/0.2\% for fbank.
+
+\begin{tabp}[Comparison of DNNs with and without pretraining]
+	\label{t:pretraining}
+& \multicolumn{2}{c}{6 hidden layers} & \multicolumn{3}{c}{2 hidden layers}\\
+\cmidrule(r){2-3} \cmidrule(r){4-6}
+Metric/Initialization &  random & RBM & random & RBM & random \\
 Set size &  80 & 80 & 80 & 80 & 20 \\
+\midrule
 WER dev &  18.2 & 18.1 & 20.7 & 20.7 & 25.0  \\ 
 WER test &  17.5 & 17.0 & 19.8 & 19.4 & 25.5 \\
 xEnt 1st iter. & 2.89/3.32 & 2.35/2.71 &2.8/3.36 &2.46/2.91 & \\
- xEnt last iter.  & 2.16/2.52 & 1.9/2.1 & 2.39/2.65  & 2.03/2.28 & \\
- FA iter1 & 35.18/28.19 & 44.45/35.69 & 37.1/28.0 & 42.97/34.54 & \\
- FA last & 45.52/39.46 & 53.49/47.5 & 42.1/37.6 & 49.26/44.57 & \\
- \bottomrule
-\end{tabular}
-\caption{Comparison of various pretraining types}
-\end{table}
+xEnt last iter.  & 2.16/2.52 & 1.9/2.1 & 2.39/2.65  & 2.03/2.28 & \\
+FA 1st iter. & 35.18/28.19 & 44.45/35.69 & 37.1/28.0 & 42.97/34.54 & \\
+FA last iter. & 45.52/39.46 & 53.49/47.5 & 42.1/37.6 & 49.26/44.57 & 
+\end{tabp}
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{ lll } 
-\toprule
- Feature type & lstm & lstm \\ 
-\midrule
+As the most important aspect of this work we are comparing 2 types of the pretraining of the neural network: RBM and random initialization. Unlike to our previous, we weren't able to show that RBM pretraining method boosted our final metric WER. However, we noticed that:
+
+\begin{itemize}
+	\item Softmax function lass after first iteration much lower when using pretraining. 
+	\item After last iteration still there is improvement in xEnt, but not as big as after first iteration.
+	\item It is also worth to notice very high frame accuracy on models with pretraining.
+\end{itemize}
+
+\begin{comment}
+\begin{tabp}[LSTM network]
+	\label{t:lstm}
+Feature type & LSTM & LSTM \\ 
 Set size & 20 & 80 \\
+\midrule
 WER dev & 22.1 & 18.4 \\
-WER test & 21.0 & 17.4 \\
- \bottomrule
-\end{tabular} 
-\caption{LSTM}
-\label{tab:lstm_scores}
-\end{table}
+WER test & 21.0 & 17.4
+\end{tabp}
+\end{comment}
 
-\end{center}
+\section{Discussion}
+\todo{add discussion}
 
-\begin{tabpo}[hello]
-prof table \\
-\end{tabpo}
