@@ -7,7 +7,7 @@ In this chapter we will present necessary framework for feature extraction: basi
 	M(f) = 1127\log\left(1+\frac{f}{700}\right)
 \end{equation}
 
-\subsection{Digital Signal Processing}
+\section{DSP - Digital Signal Processing}
 
 Signal $x_a(t), -\infty < t < \infty$ is a~function of independent variable which is the time. In order to digitize signal and be able to store it into memory we must digitize signal and create sequence or a~function. The process is done using Analog Digital converter - device which converts analog to digital signal using a~sampler and a~quantizer.
 
@@ -122,7 +122,7 @@ where $x_{max}, x_{min}$ are the maximum and minimum values of the signal, L~is 
 \caption{Example sentence in polish: ``Ala ma kota``. Time and frequency dimensions.}
 \end{figure}
 
-\section{MFCC}
+\section{MFCC - Mel-frequency spectrum}
 
 Computations required for delta MFCC features consists of 7 steps \parencite{muda_voice_2010}. 
 
@@ -186,7 +186,7 @@ In this section we describe all techniques, which we are using in our experiment
 	\item 13 cepstral coefficients
 	\item 13 delta cepstral coefficients 
 	\item 13 double delta cepstral coefficients
-	\item 1 energy coefficients
+	\item 1 energy coefficient
 \end{itemize}
 
 

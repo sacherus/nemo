@@ -1,7 +1,72 @@
 \chapter{Models}
 This chapter brings deep insight of models used in our experiments. We are starting by describing Gaussian mixture models, then hidden Markov models, which are as the first steps in speech recognition process. Then we are create valid basis for the state-of-the-art technique \parencite{mohamed_phone_2010}
 
-\todo{Change order of HMM and GMM}
+
+\section{GMM - Gaussian mixture model}
+
+One of the key concepts in ASR~is Gaussian distribution \parencite{jurafsky} also known as normal distribution. A~Gaussian distribution is parametrized by a~mean $\mu $ and a~variance~$\sigma ^ 2$. Density function is expressed as:
+
+\begin{equation}
+	f(x;\mu,\sigma) = \frac {1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x-\mu)^2}{2\sigma ^ 2}\right)
+	\label{Gaussion Distribution}
+\end{equation}
+where $\mu \in \mathbb{R}, \sigma \in \mathbb{R}_+$
+Density function over a~continuous space is called probability density function (pdf). However, we fairly rare using univariate GD.
+
+Multivariate gaussian distribution can be defined as:
+\begin{equation}
+	f(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp \left( -\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) \right)
+	\label{multivariate_gaussian}
+\end{equation}
+where $\mu \in \mathbb{R}^n, \Sigma \in \mathbb{R}^{nxn}$ and $\Sigma$ is symmetric and positive semi-definite.
+Extension of \eqref{multivariate_gaussian} is mixture of Gaussians:
+
+Assuming that data X comes from multiple Gaussian distributions, data joint distribution can be represented as $p(x^{(i)},z^{(i)})=p(x^{(i)}|z^{(i)})p(z^{(i)})$, where $z^{(i)}\sim\text{Multinomial}(\phi)$  is a latent variable.
+
+One can define log likelihood of GMM:
+\begin{equation}
+	l(\phi,\mu,\Sigma)=\sum\limits^m_i \log p(x^{(i)}|z^{(i)};\mu,\Sigma) + \log p(z^{(i)};\phi)
+\end{equation}
+
+Assuming that the latent variable is known, one can show that maximum is found in:
+\begin{align}
+\begin{split}
+	\label{gmm_max}
+	& \phi_j = \frac{1}{m}\sum\limits^m_{i=1}1\{z^{(i)}=j\} \\
+	& \mu_j = \frac{\sum\limits_{i=1}^m1\{z^{(i)}=j\}x^{(i)}}{\sum\limits_{i=1}^m1\{z^{(i)}=j\}} \\
+	& \Sigma_j = \frac{\sum\limits_{i=1}^m1\{z^{(i)}=j\}(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum\limits_{i=1}^m1\{z^{(i)}=j\}}
+\end{split}
+\end{align}
+
+If $\phi_j, \mu_j, \Sigma_j$ are known, then log likelihood is maximized~by~$p(z^{(i)}=j|x^{(i)})$:
+\begin{equation}
+	\label{gmm_exp}
+	c_{j}^{(i)}=p(z^{(i)}=j|x^{(i)}) = \frac{p(x^{(i)}|z^{(i)}=j)p(z^{(i)}=j)}{\sum\limits^k_l p(x^{(i)}|z^{(i)}=l)p(z^{(i)}=l)}
+\end{equation}
+
+In the case of $z^{(i)}, \phi_j, \mu_j, \Sigma_j$ being unknown, one can use Expectation-Maximization algorithm in order do find local minimum: 
+
+\begin{algorithm} Expectation-Maximization for GMMs \\
+Repeat until stop criterion is met:
+\begin{indenva}
+Foreach i,j in (range(m),range(k)):
+\begin{indenvb}
+	\begin{enumerate}
+\item Expectation: 
+	Compute array $c$: \eqref{gmm_exp}  
+\item Maximization: 
+	\begin{align}
+		& \phi_j = \frac{1}{m}\suml_i^m \ip{c}_j  \\
+		& \mu_j = \frac{\suml^m_{i=1}\ip{c}_j\ip{x}}{\suml^m_{i=1}\ip{c}_j} \\
+		& \Sigma_j = \frac{\sum_{i=1}^m \ip{c}_j(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m \ip{c}_i}
+	\end{align}
+	\end{enumerate}
+\end{indenvb}
+\end{indenva}
+\end{algorithm}
+One can show that EM is guaranteed to converge \parencite{ng_cs229_2000}.
+
+\todo{After: describe EM}
 
 \section{HMM - Hidden Markov model}
 
@@ -124,76 +189,6 @@ Similar to forward algorithm we are able to find dynamic procedure working with 
 
 \todo{After: add BW}
 
-\section{GMM - Gaussian mixture model}
-
-One of the key concepts in ASR~is Gaussian distribution \parencite{jurafsky} also known as normal distribution. A~Gaussian distribution is parametrized by a~mean $\mu $ and a~variance~$\sigma ^ 2$. Density function is expressed as:
-
-\begin{equation}
-	f(x;\mu,\sigma) = \frac {1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x-\mu)^2}{2\sigma ^ 2}\right)
-	\label{Gaussion Distribution}
-\end{equation}
-where $\mu \in \mathbb{R}, \sigma \in \mathbb{R}_+$
-Density function over a~continuous space is called probability density function (pdf). However, we fairly rare using univariate GD.
-
-Multivariate gaussian distribution can be defined as:
-\begin{equation}
-	f(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp \left( -\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) \right)
-	\label{multivariate_gaussian}
-\end{equation}
-where $\mu \in \mathbb{R}^n, \Sigma \in \mathbb{R}^{nxn}$ and $\Sigma$ is symmetric and positive semi-definite.
-Extension of \eqref{multivariate_gaussian} is mixture of Gaussians:
-
-Assuming that data X comes from multiple Gaussian distributions, data joint distribution can be represented as $p(x^{(i)},z^{(i)})=p(x^{(i)}|z^{(i)})p(z^{(i)})$, where $z^{(i)}\sim\text{Multinomial}(\phi)$  is a latent variable.
-
-One can define log likelihood of GMM:
-\begin{equation}
-	l(\phi,\mu,\Sigma)=\sum\limits^m_i \log p(x^{(i)}|z^{(i)};\mu,\Sigma) + \log p(z^{(i)};\phi)
-\end{equation}
-
-Assuming that the latent variable is known, one can show that maximum is found in:
-\begin{align}
-\begin{split}
-	\label{gmm_max}
-	& \phi_j = \frac{1}{m}\sum\limits^m_{i=1}1\{z^{(i)}=j\} \\
-	& \mu_j = \frac{\sum\limits_{i=1}^m1\{z^{(i)}=j\}x^{(i)}}{\sum\limits_{i=1}^m1\{z^{(i)}=j\}} \\
-	& \Sigma_j = \frac{\sum\limits_{i=1}^m1\{z^{(i)}=j\}(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum\limits_{i=1}^m1\{z^{(i)}=j\}}
-\end{split}
-\end{align}
-
-If $\phi_j, \mu_j, \Sigma_j$ are known, then log likelihood is maximized~by~$p(z^{(i)}=j|x^{(i)})$:
-\begin{equation}
-	\label{gmm_exp}
-	c_{j}^{(i)}=p(z^{(i)}=j|x^{(i)}) = \frac{p(x^{(i)}|z^{(i)}=j)p(z^{(i)}=j)}{\sum\limits^k_l p(x^{(i)}|z^{(i)}=l)p(z^{(i)}=l)}
-\end{equation}
-
-In the case of $z^{(i)}, \phi_j, \mu_j, \Sigma_j$ being unknown, one can use Expectation-Maximization algorithm in order do find local minimum: 
-
-\begin{algorithm} Expectation-Maximization for GMMs \\
-Repeat until stop criterion is met:
-\begin{indenva}
-Foreach i,j in (range(m),range(k)):
-\begin{indenvb}
-	\begin{enumerate}
-\item Expectation: 
-	Compute array $c$: \eqref{gmm_exp}  
-\item Maximization: 
-	\begin{align}
-		& \phi_j = \frac{1}{m}\suml_i^m \ip{c}_j  \\
-		& \mu_j = \frac{\suml^m_{i=1}\ip{c}_j\ip{x}}{\suml^m_{i=1}\ip{c}_j} \\
-		& \Sigma_j = \frac{\sum_{i=1}^m \ip{c}_j(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m \ip{c}_i}
-	\end{align}
-	\end{enumerate}
-\end{indenvb}
-\end{indenva}
-\end{algorithm}
-One can show that EM is guaranteed to converge \parencite{ng_cs229_2000}.
-
-\todo{After: describe EM}
-
-\section{GMMs and HMMs}
-
-\todo{I: add section}
-
 
 \section{ANN - Artificial neural networks}
 First simulation of a human brain were conducted by \textcite{mcculloch}. Perceptron and its learning rule was introduced by \textcite{rosenblatt} as the valid basis for creation of more complex structure which is neural network. \textcite{hebb1} put foundations for backpropagation learning rule.
@@ -273,7 +268,7 @@ Now we are able to define and minimize log likelihood of logistic regression:
 \begin{equation} 
 	\max\limits_\theta l(\theta;X,y) = \max\limits_\theta \sum\limits^{m}_{i=1}y^{(i)}\log{h_\theta(x^{(i)})}+(1-y^{(i)})\log(1-h_\theta(x^{(i)})
 \end{equation}
-For logistic regression cost function is defined as: $J(\theta)=l(\theta)$. At last we should define $f(z)$ mapping function. Using General Linear Models \parencite[p. 26]{ng_cs229_2000}, one  can formulate sigmoid (logistic function):
+For the logistic regression the cost function is defined as: $J(\theta)=l(\theta)$. At last we should define $f(z)$ mapping function. Using General Linear Models \parencite[p. 26]{ng_cs229_2000}, one  can formulate sigmoid (logistic function):
 
 
 \begin{equation} 
@@ -486,7 +481,7 @@ When Gibbs sampling is employed for minimizing parameters with gradient descent 
 \begin{indenva}
 \begin{enumerate}
 	\item generate $x^{*}$ using N steps of Gibbs sampling and $\ip{x}$ as a starting point
-	\item use data and reconstruction expectations in order to provide updates for gradient descent alogrithm:
+	\item use data and reconstruction expectations in order to provide updates for gradient descent algorithm:
 \begin{indenvb}
 	\begin{align}
 		&\Delta\ip{W} =  h(\ip{x})x^{(t)T} - h(x^*)x^{*T} \\
@@ -498,5 +493,15 @@ When Gibbs sampling is employed for minimizing parameters with gradient descent 
 \end{indenva}
 \item repeat until stopping criteria.
 \end{algorithm}
+
+\subsection{Gaussian-Bernoulli RBM}
+What we presented so far is a Bernoulli-Bernoulli RBM. However, our we assuming that our data is coming from gaussian distribution $p(x|h)$. The changes that one need to make in order to extend RBM for speech recognition data are:
+\begin{itemize}
+	\item add quadratic term to energy function $E_{GB} = E_{BB} + \fone{2}x^Tx$
+	\item $\mu=c + W^T$ with identity covariance matrix, when data is normalized
+	\item use smaller learning rate then BB-RBM 
+\end{itemize}
+
+
 
 \section{DBN - deep belief network}

@@ -42,7 +42,7 @@ W^*=\underset{W \in L}{\operatorname{argmax}} P(W|O)
 \section{Previous approaches}
 The first algorithms for speech recognition involved matching distances on some predefined templates \parencite{juang_automatic_2005}. In 1980's two important models were introduced: n-gram model as a type of a language model and hidden Markov model. Those 2 techniques allow for large vocabulary, statistical based speech recognition. Later, in the 1990's constant hardware updates and better algorithms improved decoding time and allowed for real-time, continuous systems. Surprisingly revolution in speech recognition has stopped for about 10 years. Until 2010 almost all techniques involved Gaussian mixture models \parencite{yu_automatic_2015}. Hybrid models from 90's which substituted Gaussian mixtures did not bring expected results. However, famous paper by \textcite{hinton_fast_2006} showed how to teach deep models, which had problems with convergence, caused by vanishing or exploding gradient. Since 2010 there is rapid improvement in the field of the speech recognition.
 
-\section{State of the art}
+\section{State of the art approaches}
 As mentioned in a previous section state of the art involves using neural networks with many layers (deep neural networks), which are being extensively examined by researchers. Deep learning techniques used in speech recognition consists of:
 
 \begin{enumerate}
@@ -52,3 +52,5 @@ As mentioned in a previous section state of the art involves using neural networ
 	\item Convolution neural networks (CNN) \parencite{abdel-hamid_applying_2012}
 	\item Long short term memory (LSTM) recurrent neural networks (RNN) \parencite{graves_speech_2013}
 \end{enumerate}
+
+\textbf{Our goal is to use of one of the deep learning technique and show its superiority over standard approaches like GMMs and shallow architectures. The confirmation or the rejection of this thesis can be found in the part ``Experiments, data, results''.}

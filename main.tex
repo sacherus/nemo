@@ -10,6 +10,7 @@
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage{indentfirst}
 
 
 \usepackage{changepage}   % for the adjustwidth environment
@@ -87,6 +88,9 @@ citestyle=authoryear,
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
 
+\setlength{\parindent}{3em}
+\setlength{\parskip}{1em}
+
 \bibliography{my}
 \bibliography{zotero}
 
@@ -94,7 +98,7 @@ citestyle=authoryear,
 \title{}
 \author{Piotr Kowenzowski}
 \date{\today}
-\input{title.tex}
+\input{title_en.tex}
 \newpage
 \tableofcontents
 \newpage
@@ -130,9 +134,6 @@ citestyle=authoryear,
 \listoftodos
 
 
-\todo{Structure of thesis}
-
-
 \part{Automatic speech recognition problem}
 \input{chap_intro/main.tex}
 
@@ -145,21 +146,22 @@ citestyle=authoryear,
 
 \input{chap_models/main.tex}
 
-\part{Experiment and results}
+\part{Experiment, data and results}
 
 \input{chap_data/main.tex}
 
 \input{chap_experiment/main.tex}
 
-\input{chap_final/main.tex}
+%\input{chap_final/main.tex}
 
-\appendix
-\appendixpage
-\addappheadtotoc
 
-\input{app/backpropag.tex}
+%\appendix
+%\appendixpage
+%\addappheadtotoc
 
-\newpage
+%\input{app/backpropag.tex}
+
+%\newpage
 
 \printbibliography
 
